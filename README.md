@@ -1,8 +1,8 @@
 # Brink OpenTherm controller
 
 ### Hardware
-Wemos D1 Mini or compatible
-OpenTherm master shield
+- Wemos D1 Mini or compatible
+- OpenTherm master shield
 
 ### Firmware
 Arduino
