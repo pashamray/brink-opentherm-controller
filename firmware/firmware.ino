@@ -40,6 +40,11 @@ void loop() {
         Serial.printf("get speed: %d", speed);
         Serial.println();
       }
+
+      if (command.startsWith("timer", 4)) {
+        Serial.printf("get timer: %d", timer);
+        Serial.println();
+      }
     }
   }
 }
