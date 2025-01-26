@@ -11,6 +11,9 @@ void loop() {
 
   if (Serial.available()) {
     String command = Serial.readStringUntil('\n');
-    Serial.println(command);
+    
+    if (command.equals("ping")) {
+      Serial.println("pong");
+    }
   }
 }
