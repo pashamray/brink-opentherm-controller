@@ -34,5 +34,12 @@ void loop() {
         Serial.println();
       }
     }
+
+    if (command.startsWith("get")) {
+      if (command.startsWith("speed", 4)) {
+        Serial.printf("get speed: %d", speed);
+        Serial.println();
+      }
+    }
   }
 }
