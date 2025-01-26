@@ -1,4 +1,5 @@
 unsigned int speed = 0;
+unsigned int timer = 0;
 
 void setup() {
   pinMode(BUILTIN_LED, OUTPUT);
@@ -23,6 +24,13 @@ void loop() {
         speed = command.substring(9).toInt();
 
         Serial.printf("set speed: %d", speed);
+        Serial.println();
+      }
+
+      if (command.startsWith("timer", 4)) {
+        timer = command.substring(9).toInt();
+
+        Serial.printf("set timer: %d", timer);
         Serial.println();
       }
     }
