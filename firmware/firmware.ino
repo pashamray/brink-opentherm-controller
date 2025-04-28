@@ -1,26 +1,31 @@
 #include <Arduino.h>
-// https://github.com/ihormelnyk/opentherm_library
-#include <OpenTherm.h>
+#include <Ticker.h>
+
 #include "OpenThermBrinkHelper.h"
 
 #define OT_RX_PIN (21)
 #define OT_TX_PIN (22)
 
-OpenTherm ot(OT_RX_PIN, OT_TX_PIN);
-OpenThermBrinkHelper brinkHelper(&ot);
-
-unsigned int current_speed = 0; // presets 1,2,3 
-unsigned int current_timer = 0;
+OpenThermBrinkHelper brinkHelper(OT_RX_PIN, OT_TX_PIN);
 
 void IRAM_ATTR handleInterrupt()
 {
-    ot.handleInterrupt();
+    brinkHelper.handleInterrupt();
 }
+
+void brinkLoop()
+{
+  brinkHelper.loop();
+  digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+}
+
+Ticker looper;
 
 void setup() {
   pinMode(BUILTIN_LED, OUTPUT);
 
-  ot.begin(handleInterrupt);
+  brinkHelper.begin(handleInterrupt);
+  looper.attach(1, brinkLoop);
 
   Serial.begin(9600);
   Serial.println("Start");
@@ -29,11 +34,6 @@ void setup() {
 
 void loop()
 {
-  digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-
-  brinkHelper.loop();
-
-  delay(1000);
 }
 
 void serialReceive() 
@@ -54,19 +54,10 @@ void serialReceive()
 
       brinkHelper.setSpeed(speed);
 
-      current_speed = speed;
-
       Serial.printf("set speed: %d", speed);
       Serial.println();
 
       return;
-    }
-
-    if (command.startsWith("timer", 4)) {
-      current_timer = command.substring(9).toInt();
-
-      Serial.printf("set timer: %d", current_timer);
-      Serial.println();
     }
   }
 
@@ -78,11 +69,6 @@ void serialReceive()
       Serial.println();
 
       return;
-    }
-
-    if (command.startsWith("timer", 4)) {
-      Serial.printf("get timer: %d", current_timer);
-      Serial.println();
     }
   }
 }

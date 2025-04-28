@@ -1,16 +1,19 @@
 # Brink OpenTherm controller
 
-### Hardware
+## Hardware
 - [Wemos D1 Mini](https://www.wemos.cc/en/latest/d1/d1_mini.html) or compatible
 - [OpenTherm master shield (ihormelnyk)](https://ihormelnyk.com/opentherm_adapter) or
 - [OpenTherm master shield (diyless)](https://diyless.com/product/master-opentherm-shield)
 
-### Firmware
-Arduino
+## Firmware
+Arduino IDE
 
-### Software
+#### Libs
+https://github.com/ihormelnyk/opentherm_library
 
-### References
+## Software
+
+#### References
 - https://otgw.tclcode.com/
 - https://github.com/jpraus/arduino-opentherm
 - https://portegi.es/blog/opentherm-wtw-1

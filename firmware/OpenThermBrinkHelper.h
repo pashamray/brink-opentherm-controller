@@ -9,18 +9,18 @@
 #ifndef OpenThermBrinkHelper_h
 #define OpenThermBrinkHelper_h
 
+// https://github.com/ihormelnyk/opentherm_library
 #include <OpenTherm.h>
 
-class OpenThermBrinkHelper
+class OpenThermBrinkHelper: public OpenTherm
 {
 public:
-  OpenThermBrinkHelper(OpenTherm *ot);
+  OpenThermBrinkHelper(int inPin, int outPin);
   ~OpenThermBrinkHelper();
   void loop();
   unsigned int getSpeed();
   void setSpeed(unsigned int speed);
 private:
-  OpenTherm *ot;
   struct {
     bool needPush = false;
     unsigned int setSpeed = 0;

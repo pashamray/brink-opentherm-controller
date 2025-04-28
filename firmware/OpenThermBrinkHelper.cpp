@@ -8,8 +8,7 @@
 
 #include "OpenThermBrinkHelper.h"
 
-OpenThermBrinkHelper::OpenThermBrinkHelper(OpenTherm *opentherm):
-  ot(opentherm)
+OpenThermBrinkHelper::OpenThermBrinkHelper(int inPin, int outPin): OpenTherm(inPin, outPin)
 {
 }
 
@@ -55,24 +54,24 @@ void OpenThermBrinkHelper::pullParameters()
 
 unsigned int OpenThermBrinkHelper::getRelativeVentilationLevel()
 {
-  unsigned long response = ot->sendRequest(ot->buildRequest(OpenThermMessageType::READ_DATA, OpenThermMessageID::RelVentLevel, 0));
+  unsigned long response = sendRequest(buildRequest(OpenThermMessageType::READ_DATA, OpenThermMessageID::RelVentLevel, 0));
 
-  OpenThermResponseStatus responseStatus = ot->getLastResponseStatus();
+  OpenThermResponseStatus responseStatus = getLastResponseStatus();
   if (responseStatus != OpenThermResponseStatus::SUCCESS) {
     return 0;
   }
 
-  return ot->getUInt(response);
+  return getUInt(response);
 }
 
 unsigned int OpenThermBrinkHelper::setRelativeVentilationLevel(unsigned int level)
 {
-  unsigned long response = ot->sendRequest(ot->buildRequest(OpenThermMessageType::WRITE_DATA, OpenThermMessageID::Vset, min(level, (unsigned int) 100)));
+  unsigned long response = sendRequest(buildRequest(OpenThermMessageType::WRITE_DATA, OpenThermMessageID::Vset, min(level, (unsigned int) 100)));
 
-  OpenThermResponseStatus responseStatus = ot->getLastResponseStatus();
+  OpenThermResponseStatus responseStatus = getLastResponseStatus();
   if (responseStatus != OpenThermResponseStatus::SUCCESS) {
     return 0;
   }
 
-  return ot->getUInt(response);
+  return getUInt(response);
 }
