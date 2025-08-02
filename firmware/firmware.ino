@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <Ticker.h>
+#include <EEPROM.h>
 
 #include "OpenThermBrinkHelper.h"
 
@@ -8,6 +9,10 @@
 
 OpenThermBrinkHelper brinkHelper(OT_RX_PIN, OT_TX_PIN);
 
+struct VentilationSettings{
+  unsigned int speed;
+} ventSettings;
+
 void IRAM_ATTR handleInterrupt()
 {
     brinkHelper.handleInterrupt();
@@ -15,25 +20,41 @@ void IRAM_ATTR handleInterrupt()
 
 void brinkLoop()
 {
+  brinkHelper.setSpeed(ventSettings.speed);
   brinkHelper.loop();
+
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
 }
 
 Ticker looper;
 
 void setup() {
-  pinMode(BUILTIN_LED, OUTPUT);
+  EEPROM.begin(512);
+  read_eeprom();
 
-  brinkHelper.begin(handleInterrupt);
-  looper.attach(1, brinkLoop);
+  pinMode(BUILTIN_LED, OUTPUT);
 
   Serial.begin(9600);
   Serial.println("Start");
   Serial.onReceive(serialReceive);
+
+  brinkHelper.begin(handleInterrupt);
+  looper.attach(1, brinkLoop);
 }
 
 void loop()
 {
+}
+
+void read_eeprom() {
+  EEPROM.get(0, ventSettings);
+
+  Serial.println(ventSettings.speed);
+}
+
+void write_eeprom() {
+  EEPROM.put(0, ventSettings);
+  EEPROM.commit();
 }
 
 void serialReceive() 
@@ -46,15 +67,17 @@ void serialReceive()
   
   if (command.equals("ping")) {
     Serial.println("pong");
+
+    return;
   }
 
   if (command.startsWith("set")) {
     if (command.startsWith("speed", 4)) {
-      unsigned int speed = command.substring(9).toInt();
+      ventSettings.speed = command.substring(9).toInt();
 
-      brinkHelper.setSpeed(speed);
+      write_eeprom();
 
-      Serial.printf("set speed: %d", speed);
+      Serial.printf("set speed: %d", ventSettings.speed);
       Serial.println();
 
       return;
@@ -63,9 +86,7 @@ void serialReceive()
 
   if (command.startsWith("get")) {
     if (command.startsWith("speed", 4)) {
-      unsigned int speed = brinkHelper.getSpeed();
-
-      Serial.printf("get speed: %d", speed);
+      Serial.printf("get speed: %d", ventSettings.speed);
       Serial.println();
 
       return;
