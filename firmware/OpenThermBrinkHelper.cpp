@@ -12,6 +12,10 @@ OpenThermBrinkHelper::OpenThermBrinkHelper(int inPin, int outPin): OpenTherm(inP
 {
 }
 
+OpenThermBrinkHelper::~OpenThermBrinkHelper()
+{
+}
+
 void OpenThermBrinkHelper::loop()
 {
   pushParameters();
