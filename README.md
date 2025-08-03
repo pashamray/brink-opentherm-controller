@@ -6,6 +6,7 @@ The device supports the following features:
 
 - [x] Accepting commands
     - [x] `ping` – responds with `pong`, used for testing  
+    - [x] `restart` – restart ESP32 controller
     - [x] `set` – sets parameters  
         - [x] `set speed 0, 10, 50, 100...`  
         - [x] `set wifi ssid@pass`  

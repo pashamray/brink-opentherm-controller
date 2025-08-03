@@ -107,6 +107,14 @@ void serialReceive()
     return;
   }
 
+    if (command.equals("restart")) {
+    Serial.println("Restart...");
+
+    ESP.restart();
+
+    return;
+  }
+
   if (command.startsWith("set")) {
     if (command.startsWith("speed", 4)) {
       ventSet.speed = command.substring(9).toInt();
