@@ -2,6 +2,7 @@
 #include <Ticker.h>
 #include <WiFi.h>
 #include <Preferences.h>
+#include <WebServer.h>
 
 #include "OpenThermBrinkHelper.h"
 
@@ -21,6 +22,8 @@ struct WifiSettings{
 
 Preferences preferences;
 
+WebServer server(80);
+
 void IRAM_ATTR handleInterrupt()
 {
     brinkHelper.handleInterrupt();
@@ -34,7 +37,8 @@ void brinkLoop()
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
 }
 
-Ticker looper;
+Ticker brinkHelperLooper;
+Ticker webServerLooper;
 
 void setup() {
   read_preferences();
@@ -46,15 +50,41 @@ void setup() {
   Serial.onReceive(serialReceive);
 
   brinkHelper.begin(handleInterrupt);
-  looper.attach(1, brinkLoop);
+  brinkHelperLooper.attach(1, brinkLoop);
 
   // connect to WiFi
+  WiFi.mode(WIFI_STA);
   WiFi.begin(wifiSet.ssid, wifiSet.pass);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
   }
   Serial.println("Connected to WiFi!");
   Serial.println(WiFi.localIP());
+
+  // web server
+  server.on("/", []() {
+    server.send(200, "text/plain", "hello");
+  });
+  server.on("/ping", []() {
+    server.send(200, "text/plain", "pong");
+  });
+  server.on("/api/speed", HTTP_GET, []() {
+    server.send(200, "text/plain", "get speed: " + String(ventSet.speed));
+  });
+  server.on("/api/speed", HTTP_POST, []() {
+    if (server.argName(0) != "value") {
+      return;
+    }
+
+    ventSet.speed = server.arg(0).toInt();
+    write_preferences();
+
+    server.send(200, "text/plain", "set speed: " + String(ventSet.speed));
+  });
+
+  server.begin();
+  webServerLooper.attach(1, webserverHandle);
+  Serial.println("WEB server started");
 }
 
 void loop()
@@ -142,6 +172,9 @@ void serialReceive()
       
       Serial.printf("\tpass: %s", wifiSet.pass);
       Serial.println();
+
+      Serial.printf("\tlocal IP: %s", WiFi.localIP());
+      Serial.println();      
       
       return;
     }
@@ -163,4 +196,9 @@ void serialReceive()
       Serial.println();
     }
   }
+}
+
+void webserverHandle()
+{
+  server.handleClient();
 }

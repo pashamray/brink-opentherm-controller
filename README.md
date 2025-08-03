@@ -15,7 +15,11 @@ The device supports the following features:
         - [x] `get wifi`
 - [x] Saving settings to NVS ([Preferences](https://docs.arduino.cc/libraries/preferences/))  
 - [x] Device control via serial port  
-- [ ] Device control via web interface  
+- [x] Device control via web interface
+    - [x] `/` –  `hello`   
+    - [x] `/ping` – `pong` using for testing
+    - [x] `/api/speed` – GET request, return current speed set
+    - [x] `/api/speed?value=3` – POST request, set current speed to `3`
 - [ ] Device control via app local network (offline)  
 - [ ] Device control via app global network (online)  
 
