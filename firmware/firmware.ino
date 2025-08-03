@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <Ticker.h>
-#include <EEPROM.h>
 #include <WiFi.h>
+#include <Preferences.h>
 
 #include "OpenThermBrinkHelper.h"
 
@@ -12,12 +12,14 @@ OpenThermBrinkHelper brinkHelper(OT_RX_PIN, OT_TX_PIN);
 
 struct VentilationSettings{
   unsigned int speed;
-} ventSettings;
+} ventSet;
 
 struct WifiSettings{
-  char ssid[50];
-  char pass[50];
-} wifiSettings;
+  String ssid;
+  String pass;
+} wifiSet;
+
+Preferences preferences;
 
 void IRAM_ATTR handleInterrupt()
 {
@@ -26,7 +28,7 @@ void IRAM_ATTR handleInterrupt()
 
 void brinkLoop()
 {
-  brinkHelper.setSpeed(ventSettings.speed);
+  brinkHelper.setSpeed(ventSet.speed);
   brinkHelper.loop();
 
   digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
@@ -35,8 +37,7 @@ void brinkLoop()
 Ticker looper;
 
 void setup() {
-  EEPROM.begin(512);
-  read_eeprom();
+  read_preferences();
 
   pinMode(BUILTIN_LED, OUTPUT);
 
@@ -48,7 +49,7 @@ void setup() {
   looper.attach(1, brinkLoop);
 
   // connect to WiFi
-  WiFi.begin(wifiSettings.ssid, wifiSettings.pass);
+  WiFi.begin(wifiSet.ssid, wifiSet.pass);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
   }
@@ -60,16 +61,36 @@ void loop()
 {
 }
 
-void read_eeprom() {
-  EEPROM.get(0, ventSettings);
-  EEPROM.get(sizeof(ventSettings), wifiSettings);
+void read_preferences() {
+  if (preferences.begin("my-app", false) == false) {
+    Serial.println("Preferences open failed.");
+
+    return;
+  }
+
+  ventSet.speed = preferences.getUInt("ventSet.speed", 1);
+
+  wifiSet.ssid = preferences.getString("wifiSet.ssid", "ssid");
+  wifiSet.pass = preferences.getString("wifiSet.pass", "pass");
+
+  // Close the Preferences
+  preferences.end();
 }
 
-void write_eeprom() {
-  EEPROM.put(0, ventSettings);
-  EEPROM.put(sizeof(ventSettings), wifiSettings);
+void write_preferences() {
+  if (preferences.begin("my-app", false) == false) {
+    Serial.println("Preferences open failed.");
 
-  EEPROM.commit();
+    return;
+  }
+
+  preferences.putUInt("ventSet.speed", ventSet.speed);
+
+  preferences.putString("wifiSet.ssid", wifiSet.ssid);
+  preferences.putString("wifiSet.pass", wifiSet.pass);
+
+  // Close the Preferences
+  preferences.end();
 }
 
 void serialReceive() 
@@ -88,11 +109,11 @@ void serialReceive()
 
   if (command.startsWith("set")) {
     if (command.startsWith("speed", 4)) {
-      ventSettings.speed = command.substring(9).toInt();
+      ventSet.speed = command.substring(9).toInt();
 
-      write_eeprom();
+      write_preferences();
 
-      Serial.printf("set speed: %d", ventSettings.speed);
+      Serial.printf("set speed: %d", ventSet.speed);
       Serial.println();
 
       return;
@@ -100,21 +121,18 @@ void serialReceive()
 
     if (command.startsWith("wifi", 4)) {
       String wifiDsn = command.substring(8);
-      String wifiSsid = wifiDsn.substring(1, wifiDsn.indexOf('@'));
-      String wifiPass = wifiDsn.substring(wifiDsn.indexOf('@') + 1);
+      wifiSet.ssid = wifiDsn.substring(1, wifiDsn.indexOf('@'));
+      wifiSet.pass = wifiDsn.substring(wifiDsn.indexOf('@') + 1);
       
-      wifiSsid.toCharArray(wifiSettings.ssid, sizeof(wifiSettings.ssid));
-      wifiPass.toCharArray(wifiSettings.pass, sizeof(wifiSettings.pass));
-      
-      write_eeprom();
+      write_preferences();
       
       Serial.print("set wifi");
       Serial.println();
       
-      Serial.printf("\tssid: %s", wifiSettings.ssid);
+      Serial.printf("\tssid: %s", wifiSet.ssid);
       Serial.println();
       
-      Serial.printf("\tpass: %s", wifiSettings.pass);
+      Serial.printf("\tpass: %s", wifiSet.pass);
       Serial.println();
       
       return;
@@ -123,7 +141,7 @@ void serialReceive()
 
   if (command.startsWith("get")) {
     if (command.startsWith("speed", 4)) {
-      Serial.printf("get speed: %d", ventSettings.speed);
+      Serial.printf("get speed: %d", ventSet.speed);
       Serial.println();
 
       return;
@@ -133,7 +151,7 @@ void serialReceive()
       Serial.print("get wifi");
       Serial.println();
 
-      Serial.printf("\tssid: %s", wifiSettings.ssid);
+      Serial.printf("\tssid: %s", wifiSet.ssid);
       Serial.println();
     }
   }

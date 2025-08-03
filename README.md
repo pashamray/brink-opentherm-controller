@@ -12,7 +12,7 @@ The device supports the following features:
     - [x] `get` – reads parameters  
         - [x] `get speed`  
         - [x] `get wifi`
-- [x] Saving settings to EEPROM (to be migrated to [Preferences](https://docs.arduino.cc/libraries/preferences/))  
+- [x] Saving settings to NVS ([Preferences](https://docs.arduino.cc/libraries/preferences/))  
 - [x] Device control via serial port  
 - [ ] Device control via web interface  
 - [ ] Device control via app local network (offline)  
