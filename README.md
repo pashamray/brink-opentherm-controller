@@ -8,6 +8,24 @@
 ## Firmware
 Arduino IDE
 
+### Device Features
+
+The device supports the following features:
+
+- [x] Accepting commands
+    - [x] `ping` – responds with `pong`, used for testing  
+    - [x] `set` – sets parameters  
+        - [x] `set speed 0, 10, 50, 100...`  
+        - [x] `set wifi ssid@pass`  
+    - [x] `get` – reads parameters  
+        - [x] `get speed`  
+        - [x] `get wifi`
+- [x] Saving settings to EEPROM (to be migrated to [Preferences](https://docs.arduino.cc/libraries/preferences/))  
+- [x] Device control via serial port  
+- [ ] Device control via web interface  
+- [ ] Device control via app local network (offline)  
+- [ ] Device control via app global network (online)  
+
 #### Libs
 https://github.com/ihormelnyk/opentherm_library
 
