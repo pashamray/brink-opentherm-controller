@@ -1,14 +1,6 @@
 # Brink OpenTherm controller
 
-## Hardware
-- [Wemos D1 Mini](https://www.wemos.cc/en/latest/d1/d1_mini.html) or compatible
-- [OpenTherm master shield (ihormelnyk)](https://ihormelnyk.com/opentherm_adapter) or
-- [OpenTherm master shield (diyless)](https://diyless.com/product/master-opentherm-shield)
-
-## Firmware
-Arduino IDE
-
-### Device Features
+## Device Features
 
 The device supports the following features:
 
@@ -26,10 +18,16 @@ The device supports the following features:
 - [ ] Device control via app local network (offline)  
 - [ ] Device control via app global network (online)  
 
+## Hardware
+- [Wemos D1 Mini](https://www.wemos.cc/en/latest/d1/d1_mini.html) or compatible
+- [OpenTherm master shield (ihormelnyk)](https://ihormelnyk.com/opentherm_adapter) or
+- [OpenTherm master shield (diyless)](https://diyless.com/product/master-opentherm-shield)
+
+## Firmware
+Arduino IDE
+
 #### Libs
 https://github.com/ihormelnyk/opentherm_library
-
-## Software
 
 #### References
 - https://otgw.tclcode.com/
