@@ -22,7 +22,6 @@ public:
   void setSpeed(unsigned int speed);
 private:
   struct {
-    bool needPush = false;
     unsigned int setSpeed = 0;
     unsigned int getSpeed = 0;
   } params;

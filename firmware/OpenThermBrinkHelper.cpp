@@ -1,3 +1,4 @@
+#include "OpenTherm.h"
 /**
   OpenThermBrinkHelper.cpp
   https://github.com/pashamray/brink-opentherm-controller
@@ -29,30 +30,16 @@ unsigned int OpenThermBrinkHelper::getSpeed()
 
 void OpenThermBrinkHelper::setSpeed(unsigned int speed)
 {
-  if (params.setSpeed == speed) {
-    return;
-  }
-
-  params.needPush = true;
   params.setSpeed = speed;
 }
 
 void OpenThermBrinkHelper::pushParameters()
 {
-  if (params.needPush == false) {
-    return;
-  }
-
   setRelativeVentilationLevel(params.setSpeed);
-  params.needPush = false;
 }
 
 void OpenThermBrinkHelper::pullParameters()
 {
-  if (params.needPush == true) {
-    return;
-  }
-
   params.getSpeed = getRelativeVentilationLevel();
 }
 
