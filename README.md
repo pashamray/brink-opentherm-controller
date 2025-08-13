@@ -13,6 +13,13 @@ The device supports the following features:
     - [x] `get` – reads parameters  
         - [x] `get speed`  
         - [x] `get wifi`
+- [x] WIFI network
+    - [x] connect    
+    - [ ] recconect
+- [ ] Time
+    - [ ] set time
+    - [ ] get time
+    - [ ] sync time from ntp server
 - [x] Saving settings to NVS ([Preferences](https://docs.arduino.cc/libraries/preferences/))  
 - [x] Device control via serial port  
 - [x] Device control via web interface
